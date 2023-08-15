@@ -25,7 +25,7 @@ import { FeedsModule } from './feeds/feeds.module';
           password: config.get('PG_PASSWORD'),
           database: config.get('PG_DATABASE'),
           url: config.get('PG_URL'),
-          ssl: true,
+          ssl: { rejectUnauthorized: false },
           autoLoadEntities: true,
           synchronize: true,
           entities: ['dist/**/*.entity.js'],
