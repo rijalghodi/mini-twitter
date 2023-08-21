@@ -5,6 +5,9 @@ export class FeedEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ default: 'anonymous' })
+  user: string;
+
   @Column({ default: '' })
   post: string;
 
