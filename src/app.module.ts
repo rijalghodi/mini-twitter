@@ -4,37 +4,20 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FeedsModule } from './feeds/feeds.module';
+import migrationDataSource from '../config/data-source';
 
 @Module({
   imports: [
-    // Config
+    // Config migration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env`,
+      load: [migrationDataSource],
     }),
-
     // Database
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'postgres',
-          host: config.get('PG_HOST'),
-          port: parseInt(config.get('PG_PORT')),
-          username: config.get('PG_USERNAME'),
-          password: config.get('PG_PASSWORD'),
-          database: config.get('PG_DATABASE'),
-          url: config.get('PG_URL'),
-          ssl: { rejectUnauthorized: false },
-          autoLoadEntities: true,
-          synchronize: true,
-          entities: ['dist/**/*.entity.js'],
-          /**
-           * Also you can import entities here...
-           */
-          // entities: [User, Report],
-        };
-      },
+      useFactory: async (configService: ConfigService) =>
+        configService.get('typeorm'),
     }),
 
     FeedsModule,
