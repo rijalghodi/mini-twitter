@@ -6,7 +6,7 @@ export class FeedEntity {
   id: number;
 
   @Column({ default: 'anonymous' })
-  user: string;
+  account: string;
 
   @Column({ default: '' })
   post: string;
