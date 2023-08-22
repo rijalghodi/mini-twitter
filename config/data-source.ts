@@ -1,21 +1,40 @@
 import { registerAs } from '@nestjs/config';
 import { config as dotenvConfig } from 'dotenv';
+import { join } from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 dotenvConfig({ path: '.env' });
 
-const config = {
+var config: any = {
   type: 'postgres',
   host: `${process.env.PG_HOST}`,
-  port: `${process.env.PG_PORT}`,
+  port: parseInt(process.env.PG_PORT),
   username: `${process.env.PG_USERNAME}`,
   password: `${process.env.PG_PASSWORD}`,
   database: `${process.env.PG_DATABASE}`,
-  entities: ['./src/**/*.entity{.ts,.js}'],
-  migrations: ['./config/migrations/*{.ts,.js}'],
-  autoLoadEntities: true,
+  entities: ['dist/**/*.entity{.ts,.js}'], // Works on migration
+  migrations: ['dist/config/migrations/*{.ts,.js}'],
+  // entities: [join(__dirname, '**', '*.entity.{js,ts}')], // Usually works on dev
+  // migrations: [join(__dirname, 'config', 'migrations', '*.{js,ts}')],
+  autoLoadEntities: true, // FIXME: postgres doesnt have autoLoadEntities
   synchronize: false,
 };
+
+switch (process.env.NODE_ENV) {
+  case 'prod':
+    config = {
+      ...config,
+      url: `${process.env.PG_URL}`,
+      ssl: { rejectUnauthorized: false },
+    };
+    break;
+  case 'dev':
+    break;
+  case 'test':
+    break;
+  default:
+    throw new Error('unknown environment');
+}
 
 export default registerAs('migrationDataSource', () => config);
 export const connectionSource = new DataSource(config as DataSourceOptions);

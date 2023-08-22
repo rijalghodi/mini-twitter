@@ -4,20 +4,20 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FeedsModule } from './feeds/feeds.module';
-import migrationDataSource from '../config/data-source';
+import fo from '../config/data-source';
 
 @Module({
   imports: [
     // Config migration
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [migrationDataSource],
+      load: [fo],
     }),
     // Database
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) =>
-        configService.get('typeorm'),
+        configService.get('migrationDataSource'),
     }),
 
     FeedsModule,
