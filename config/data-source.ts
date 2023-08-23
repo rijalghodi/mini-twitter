@@ -24,8 +24,8 @@ switch (process.env.NODE_ENV) {
   case 'prod':
     config = {
       ...config,
-      url: `${process.env.PG_URL}`,
-      ssl: { rejectUnauthorized: false },
+      url: `${process.env.PG_URL}`, // NOTE: This url is mandatory when use render.com (external link)
+      ssl: { rejectUnauthorized: false }, // NOTE: this also mandatory in render.com
     };
     break;
   case 'dev':
@@ -36,5 +36,5 @@ switch (process.env.NODE_ENV) {
     throw new Error('unknown environment');
 }
 
-export default registerAs('migrationDataSource', () => config);
+export default registerAs('db_config', () => config);
 export const connectionSource = new DataSource(config as DataSourceOptions);
